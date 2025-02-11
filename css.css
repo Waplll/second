@@ -1,42 +1,20 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
     background-color: #f4f4f4;
 }
 #app {
     padding: 20px;
 }
-.new-card-form {
-    margin-bottom: 20px;
-    padding: 10px;
-    background-color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.new-card-form input {
-    margin: 5px;
-    padding: 5px;
-    width: calc(100% - 20px);
-}
-.new-card-item {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-}
-.new-card-item input {
-    flex: 1;
-    margin-right: 10px;
-}
+
 .columns {
     display: flex;
     justify-content: space-between;
 }
 .column {
     flex: 1;
-    margin: 0 10px;
-    padding: 10px;
     background-color: #fff;
+    padding: 10px;
+    margin: 10px;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -45,59 +23,8 @@ body {
     pointer-events: none;
 }
 .card {
-    margin-bottom: 10px;
+    background: #f9f9f9;
     padding: 10px;
-    background-color: #f9f9f9;
+    margin-bottom: 10px;
     border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-.card h3 {
-    margin-top: 0;
-}
-.card ul {
-    list-style-type: none;
-    padding: 0;
-}
-.card ul li {
-    margin-bottom: 5px;
-}
-.card ul li.completed {
-    text-decoration: line-through;
-    color: #888;
-}
-.card p {
-    margin: 0;
-    font-size: 0.9em;
-    color: #666;
-}
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 5px;
-    width: 400px;
-}
-.modal-content input {
-    margin: 5px;
-    padding: 5px;
-    width: calc(100% - 20px);
-}
-.edit-card-item {
-    display: flex;
-    align-items: center;
-    margin: 5px 0;
-}
-.edit-card-item input {
-    flex: 1;
-    margin-right: 10px;
 }
