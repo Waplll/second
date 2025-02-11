@@ -1,3 +1,39 @@
+let eventBus = new Vue();
+
+Vue.component('note-card', {
+    props: {
+        card: {
+            type: Object,
+            required: true
+        },
+        column: {
+            type: Number,
+            required: true
+        }
+    },
+    template: `
+        <div class="card">
+            <h3>{{ card.title }}</h3>
+            <ul>
+                <li v-for="(item, index) in card.items" :key="index">
+                    <input type="checkbox" v-model="item.completed" @change="updateCompletion">
+                    <span :class="{ 'completed': item.completed }">{{ item.text }}</span>
+                </li>
+            </ul>
+            <p v-if="card.completedDate">Завершено: {{ card.completedDate }}</p>
+            <button @click="editCard">Редактировать</button>
+        </div>
+    `,
+    methods: {
+        updateCompletion() {
+            this.$emit('update-card', this.card, this.column);
+        },
+        editCard() {
+            this.$emit('edit-card', this.card);
+        }
+    }
+});
+
 let app = new Vue({
     el: '#app',
     data: {
@@ -39,6 +75,7 @@ let app = new Vue({
                 completedDate: null
             };
             this.cards.push(newCard);
+            this.saveData();
         },
         createCard() {
             if (this.isNewCardValid) {
@@ -61,18 +98,28 @@ let app = new Vue({
             const completionPercentage = (completedItems / totalItems) * 100;
 
             if (column === 1 && completionPercentage > 50) {
-                card.column = 2;
+                if (this.secondColumnCards.length >= 5) {
+                    this.isFirstColumnBlocked = true;
+                } else {
+                    card.column = 2;
+                }
             } else if (column === 2 && completionPercentage === 100) {
                 card.column = 3;
                 card.completedDate = new Date().toLocaleString();
             }
-            this.checkColumns();
+
+            this.checkSecondColumn();
+            this.saveData();
         },
-        checkColumns() {
-            this.isFirstColumnBlocked = this.secondColumnCards.length >= 5;
+        checkSecondColumn() {
+            if (this.secondColumnCards.length >= 5) {
+                this.isFirstColumnBlocked = true;
+            } else {
+                this.isFirstColumnBlocked = false;
+            }
         },
         editCard(card) {
-            this.editingCard = JSON.parse(JSON.stringify(card));
+            this.editingCard = JSON.parse(JSON.stringify(card)); // Глубокое копирование объекта
         },
         saveEditedCard() {
             const index = this.cards.findIndex(c => c.id === this.editingCard.id);
@@ -80,6 +127,7 @@ let app = new Vue({
                 this.cards.splice(index, 1, this.editingCard);
             }
             this.editingCard = null;
+            this.saveData();
         },
         cancelEdit() {
             this.editingCard = null;
@@ -91,31 +139,24 @@ let app = new Vue({
         },
         removeEditCardItem(index) {
             this.editingCard.items.splice(index, 1);
-        }
-    }
-});
-
-Vue.component('note-card', {
-    props: ['card', 'column'],
-    template: `
-        <div class="card">
-            <h3>{{ card.title }}</h3>
-            <ul>
-                <li v-for="(item, index) in card.items" :key="index">
-                    <input type="checkbox" v-model="item.completed" @change="updateCompletion">
-                    <span :class="{ 'completed': item.completed }">{{ item.text }}</span>
-                </li>
-            </ul>
-            <p v-if="card.completedDate">Завершено: {{ card.completedDate }}</p>
-            <button @click="editCard">Редактировать</button>
-        </div>
-    `,
-    methods: {
-        updateCompletion() {
-            this.$emit('update-card', this.card, this.column);
         },
-        editCard() {
-            this.$emit('edit-card', this.card);
+        saveData() {
+            localStorage.setItem('cards', JSON.stringify(this.cards));
+            localStorage.setItem('nextCardId', this.nextCardId);
+        },
+        loadData() {
+            const savedCards = localStorage.getItem('cards');
+            const savedNextCardId = localStorage.getItem('nextCardId');
+            if (savedCards) {
+                this.cards = JSON.parse(savedCards);
+            }
+            if (savedNextCardId) {
+                this.nextCardId = parseInt(savedNextCardId, 10);
+            }
+            this.checkSecondColumn();
         }
+    },
+    mounted() {
+        this.loadData();
     }
 });
