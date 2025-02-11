@@ -117,7 +117,7 @@ let app = new Vue({
             }
         },
         editCard(card) {
-            this.editingCard = JSON.parse(JSON.stringify(card)); // Глубокое копирование объекта
+            this.editingCard = JSON.parse(JSON.stringify(card));
         },
         saveEditedCard() {
             const index = this.cards.findIndex(c => c.id === this.editingCard.id);
@@ -136,7 +136,16 @@ let app = new Vue({
             }
         },
         removeEditCardItem(index) {
-            this.editingCard.items.splice(index, 1);
+            if (this.editingCard.items.length > 3) {
+                this.editingCard.items.splice(index, 1);
+            } else {
+                alert('Нельзя удалить пункт, так как должно быть не менее трех пунктов.');
+            }
+        },
+        deleteAllCards() {
+            this.cards = [];
+            this.nextCardId = 1;
+            this.saveData();
         },
         saveData() {
             localStorage.setItem('cards', JSON.stringify(this.cards));
