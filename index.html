@@ -38,17 +38,20 @@
 
     <div class="columns">
         <div class="column" :class="{ 'blocked': isFirstColumnBlocked }">
-            <h2>Столбец 1 (макс. 3 карточки)</h2>
+            <h2>Столбец 1</h2>
+            <p>(максимум 3 карточки)</p>
             <note-card v-for="card in firstColumnCards" :key="card.id" :card="card" :column="1"
                        @update-card="updateCard" @edit-card="editCard"></note-card>
         </div>
         <div class="column">
-            <h2>Столбец 2 (макс. 5 карточек)</h2>
+            <h2>Столбец 2</h2>
+            <p>(максимум 5 карточек)</p>
             <note-card v-for="card in secondColumnCards" :key="card.id" :card="card" :column="2"
                        @update-card="updateCard" @edit-card="editCard"></note-card>
         </div>
         <div class="column">
-            <h2>Столбец 3 (без ограничений)</h2>
+            <h2>Столбец 3</h2>
+            <p>(без ограничений)</p>
             <note-card v-for="card in thirdColumnCards" :key="card.id" :card="card" :column="3"></note-card>
         </div>
     </div>

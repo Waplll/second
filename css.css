@@ -1,11 +1,14 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-}
-#app {
     padding: 20px;
 }
-
 .columns {
     display: flex;
     justify-content: space-between;
@@ -15,7 +18,7 @@ body {
     background-color: #fff;
     padding: 10px;
     margin: 10px;
-    border-radius: 5px;
+    border-radius: 15px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .column.blocked {
@@ -23,8 +26,44 @@ body {
     pointer-events: none;
 }
 .card {
-    background: #f9f9f9;
+    background-color: aliceblue;
     padding: 10px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    border-radius: 15px;
+}
+
+li {
+    list-style-type: none;
+}
+
+h2 {
+    background-color: paleturquoise;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.new-card-form {
+    padding: 0 0 1vh 0;
+
+}
+
+button {
+    border-radius: 15px;
+    padding: 10px 20px;
+}
+
+.new-card-form  input, .modal-content input {
+    padding: 10px 0;
+    width: 50vw;
+    height: 5vh;
+    border-radius: 15px;
+}
+
+.new-card-form  input, .modal-content input ::placeholder {
+    padding: 0 0 0 10px;
+}
+
+.column p {
+    text-align: center;
+    padding: 10px 0;
 }
