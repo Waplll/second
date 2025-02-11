@@ -32,3 +32,113 @@ Vue.component('note-card', {
         }
     }
 });
+
+let app = new Vue({
+    el: '#app',
+    data: {
+        cards: [],
+        nextCardId: 1,
+        isFirstColumnBlocked: false,
+        newCardTitle: '',
+        newCardItems: ['', '', ''],
+        editingCard: null
+    },
+    computed: {
+        firstColumnCards() {
+            return this.cards.filter(card => card.column === 1);
+        },
+        secondColumnCards() {
+            return this.cards.filter(card => card.column === 2);
+        },
+        thirdColumnCards() {
+            return this.cards.filter(card => card.column === 3);
+        },
+        isNewCardValid() {
+            return this.newCardTitle.trim() !== '' && this.newCardItems.every(item => item.trim() !== '');
+        }
+    },
+    methods: {
+        addCard(title, items) {
+            const newCard = {
+                id: this.nextCardId++,
+                title: title,
+                items: items.map(text => ({ text: text, completed: false })),
+                column: 1,
+                completedDate: null
+            };
+            this.cards.push(newCard);
+            this.saveToLocalStorage();
+        },
+        createCard() {
+            if (this.isNewCardValid) {
+                this.addCard(this.newCardTitle, this.newCardItems);
+                this.newCardTitle = '';
+                this.newCardItems = ['', '', ''];
+            }
+        },
+        addNewCardItem() {
+            this.newCardItems.push('');
+        },
+        removeNewCardItem(index) {
+            this.newCardItems.splice(index, 1);
+        },
+        updateCard(card, column) {
+            const completedItems = card.items.filter(item => item.completed).length;
+            const totalItems = card.items.length;
+            const completionPercentage = (completedItems / totalItems) * 100;
+            if (column === 1 && completionPercentage > 50) {
+                card.column = 2;
+                this.checkSecondColumn();
+            } else if (column === 2 && completionPercentage === 100) {
+                card.column = 3;
+                card.completedDate = new Date().toLocaleString();
+                this.checkSecondColumn();
+            }
+            this.saveToLocalStorage();
+        },
+        checkSecondColumn() {
+            if (this.secondColumnCards.length >= 5) {
+                this.isFirstColumnBlocked = true;
+            } else {
+                this.isFirstColumnBlocked = false;
+            }
+        },
+        editCard(card) {
+            this.editingCard = JSON.parse(JSON.stringify(card));
+        },
+        saveEditedCard() {
+            const index = this.cards.findIndex(c => c.id === this.editingCard.id);
+            if (index !== -1) {
+                this.cards.splice(index, 1, this.editingCard);
+                this.saveToLocalStorage();
+            }
+            this.editingCard = null;
+        },
+        cancelEdit() {
+            this.editingCard = null;
+        },
+        addEditCardItem() {
+            this.editingCard.items.push({ text: '', completed: false });
+        },
+        removeEditCardItem(index) {
+            this.editingCard.items.splice(index, 1);
+        },
+        saveToLocalStorage() {
+            localStorage.setItem('cards', JSON.stringify(this.cards));
+            localStorage.setItem('nextCardId', this.nextCardId);
+        },
+        loadFromLocalStorage() {
+            const savedCards = localStorage.getItem('cards');
+            const savedNextCardId = localStorage.getItem('nextCardId');
+            if (savedCards) {
+                this.cards = JSON.parse(savedCards);
+            }
+            if (savedNextCardId) {
+                this.nextCardId = parseInt(savedNextCardId, 10);
+            }
+        }
+    },
+    mounted() {
+        this.loadFromLocalStorage();
+    }
+});
