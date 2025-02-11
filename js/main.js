@@ -16,7 +16,7 @@ Vue.component('note-card', {
             <h3>{{ card.title }}</h3>
             <ul>
                 <li v-for="(item, index) in card.items" :key="index">
-                    <input type="checkbox" v-model="item.completed" @change="updateCompletion">
+                    <input type="checkbox" v-model="item.completed" @change="updateCompletion" :disabled="column === 3">
                     <span :class="{ 'completed': item.completed }">{{ item.text }}</span>
                 </li>
             </ul>
@@ -42,7 +42,7 @@ let app = new Vue({
         isFirstColumnBlocked: false,
         newCardTitle: '',
         newCardItems: ['', '', ''],
-        editingCard: null
+        editingCard: null,
     },
     computed: {
         firstColumnCards() {
@@ -96,15 +96,24 @@ let app = new Vue({
             const completedItems = card.items.filter(item => item.completed).length;
             const totalItems = card.items.length;
             const completionPercentage = (completedItems / totalItems) * 100;
-            if (column === 1 && completionPercentage > 50) {
-                if (this.secondColumnCards.length >= 5) {
-                    this.isFirstColumnBlocked = true;
-                } else {
-                    card.column = 2;
+
+            if (column === 1) {
+                if (completionPercentage > 50) {
+                    if (this.secondColumnCards.length < 5) {
+                        card.column = 2;
+                    }
                 }
-            } else if (column === 2 && completionPercentage === 100) {
-                card.column = 3;
-                card.completedDate = new Date().toLocaleString();
+            } else if (column === 2) {
+                if (completionPercentage <= 50) {
+                    if (this.firstColumnCards.length < 3) {
+                        card.column = 1;
+                    } else {
+                        alert('Первый столбец полон, невозможно переместить карточку обратно.');
+                    }
+                } else if (completionPercentage === 100) {
+                    card.column = 3;
+                    card.completedDate = new Date().toLocaleString();
+                }
             }
             this.checkSecondColumn();
             this.saveData();

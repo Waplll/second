@@ -10,7 +10,7 @@
 </head>
 <body>
 <div id="app">
-    <button @click="deleteAllCards">Удалить все карточки</button>
+    <button @click="deleteAllCards">Удалить все карточки</button><br><br>
     <div class="new-card-form">
         <h2>Создать новую карточку</h2><br>
         <input v-model="newCardTitle" placeholder="Заголовок карточки" :disabled="isFirstColumnBlocked" />
