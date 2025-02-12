@@ -9,6 +9,10 @@ Vue.component('note-card', {
         column: {
             type: Number,
             required: true
+        },
+        isFirstColumnBlocked: {
+            type: Boolean,
+            required: true
         }
     },
     template: `
@@ -16,12 +20,22 @@ Vue.component('note-card', {
             <h3>{{ card.title }}</h3>
             <ul>
                 <li v-for="(item, index) in card.items" :key="index">
-                    <input type="checkbox" v-model="item.completed" @change="updateCompletion" :disabled="column === 3">
+                    <input
+                        type="checkbox"
+                        v-model="item.completed"
+                        @change="updateCompletion"
+                        :disabled="column === 3 || (column === 1 && isFirstColumnBlocked)"
+                    >
                     <span :class="{ 'completed': item.completed }">{{ item.text }}</span>
                 </li>
             </ul>
             <p v-if="card.completedDate">Завершено: {{ card.completedDate }}</p>
-            <button v-if="column !== 3" @click="editCard">Редактировать</button>
+            <button
+                v-if="column !== 3 && !(column === 1 && isFirstColumnBlocked)"
+                @click="editCard"
+            >
+                Редактировать
+            </button>
         </div>
     `,
     methods: {
@@ -42,7 +56,7 @@ let app = new Vue({
         isFirstColumnBlocked: false,
         newCardTitle: '',
         newCardItems: ['', '', ''],
-        editingCard: null,
+        editingCard: null
     },
     computed: {
         firstColumnCards() {
@@ -101,32 +115,44 @@ let app = new Vue({
                 if (completionPercentage > 50) {
                     if (this.secondColumnCards.length < 5) {
                         card.column = 2;
+                    } else {
+                        this.checkFirstColumnLock(true);
                     }
                 }
             } else if (column === 2) {
                 if (completionPercentage <= 50) {
                     if (this.firstColumnCards.length < 3) {
                         card.column = 1;
+                        this.checkFirstColumnLock(false);
                     } else {
                         alert('Первый столбец полон, невозможно переместить карточку обратно.');
                     }
                 } else if (completionPercentage === 100) {
                     card.column = 3;
                     card.completedDate = new Date().toLocaleString();
+                    this.checkFirstColumnLock(false);
                 }
             }
-            this.checkSecondColumn();
             this.saveData();
         },
-        checkSecondColumn() {
-            if (this.secondColumnCards.length >= 5) {
-                this.isFirstColumnBlocked = true;
+        checkFirstColumnLock(forceBlock = false) {
+            if (forceBlock || this.secondColumnCards.length >= 5) {
+                const hasOver50Percent = this.firstColumnCards.some(card => {
+                    const completedItems = card.items.filter(item => item.completed).length;
+                    const totalItems = card.items.length;
+                    return (completedItems / totalItems) * 100 > 50;
+                });
+                this.isFirstColumnBlocked = hasOver50Percent || forceBlock;
             } else {
                 this.isFirstColumnBlocked = false;
             }
         },
         editCard(card) {
-            this.editingCard = JSON.parse(JSON.stringify(card));
+            if (!this.isFirstColumnBlocked || card.column !== 1) {
+                this.editingCard = JSON.parse(JSON.stringify(card));
+            } else {
+                alert('Редактирование карточек в первом столбце заблокировано из-за переполнения второго столбца.');
+            }
         },
         saveEditedCard() {
             const index = this.cards.findIndex(c => c.id === this.editingCard.id);
@@ -169,7 +195,7 @@ let app = new Vue({
             if (savedNextCardId) {
                 this.nextCardId = parseInt(savedNextCardId, 10);
             }
-            this.checkSecondColumn();
+            this.checkFirstColumnLock();
         }
     },
     mounted() {

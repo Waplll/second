@@ -1,16 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script defer src="js/vue.js"></script>
     <script defer src="js/main.js"></script>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css.css">
     <title>Note App</title>
 </head>
 <body>
 <div id="app">
     <button @click="deleteAllCards">Удалить все карточки</button><br><br>
+
     <div class="new-card-form">
         <h2>Создать новую карточку</h2><br>
         <input v-model="newCardTitle" placeholder="Заголовок карточки" :disabled="isFirstColumnBlocked" />
@@ -41,19 +42,38 @@
         <div class="column" :class="{ 'blocked': isFirstColumnBlocked }">
             <h2>Столбец 1</h2>
             <p>(максимум 3 карточки)</p>
-            <note-card v-for="card in firstColumnCards" :key="card.id" :card="card" :column="1"
-                       @update-card="updateCard" @edit-card="editCard"></note-card>
+            <note-card
+                    v-for="card in firstColumnCards"
+                    :key="card.id"
+                    :card="card"
+                    :column="1"
+                    @update-card="updateCard"
+                    @edit-card="editCard"
+            ></note-card>
         </div>
+
         <div class="column">
             <h2>Столбец 2</h2>
             <p>(максимум 5 карточек)</p>
-            <note-card v-for="card in secondColumnCards" :key="card.id" :card="card" :column="2"
-                       @update-card="updateCard" @edit-card="editCard"></note-card>
+            <note-card
+                    v-for="card in secondColumnCards"
+                    :key="card.id"
+                    :card="card"
+                    :column="2"
+                    @update-card="updateCard"
+                    @edit-card="editCard"
+            ></note-card>
         </div>
+
         <div class="column">
             <h2>Столбец 3</h2>
             <p>(без ограничений)</p>
-            <note-card v-for="card in thirdColumnCards" :key="card.id" :card="card" :column="3"></note-card>
+            <note-card
+                    v-for="card in thirdColumnCards"
+                    :key="card.id"
+                    :card="card"
+                    :column="3"
+            ></note-card>
         </div>
     </div>
 </div>
