@@ -20,6 +20,10 @@
             <button @click="removeNewCardItem(index)" :disabled="isFirstColumnBlocked">Удалить</button>
         </div>
         <button @click="addNewCardItem" :disabled="isFirstColumnBlocked">Добавить пункт</button>
+        <label>
+            <input type="checkbox" v-model="isPriority" />
+            Приоритетная карточка
+        </label>
         <button @click="createCard" :disabled="!isNewCardValid || isFirstColumnBlocked">Создать карточку</button>
     </div>
 

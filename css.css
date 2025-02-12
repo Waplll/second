@@ -28,6 +28,10 @@ body {
     padding: 5px 0 0 5px;
 }
 
+.card.priority {
+    background-color: palegreen; 
+}
+
 h2 {
     background-color: paleturquoise;
     text-align: center;

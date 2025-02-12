@@ -16,7 +16,7 @@ Vue.component('note-card', {
         }
     },
     template: `
-        <div class="card">
+        <div class="card" :class="{ 'priority': card.priority }">
             <h3>{{ card.title }}</h3>
             <ul>
                 <li v-for="(item, index) in card.items" :key="index">
@@ -56,14 +56,19 @@ let app = new Vue({
         isFirstColumnBlocked: false,
         newCardTitle: '',
         newCardItems: ['', '', ''],
-        editingCard: null
+        editingCard: null,
+        isPriority: false// Флаг
     },
     computed: {
         firstColumnCards() {
-            return this.cards.filter(card => card.column === 1);
+            return this.cards
+                .filter(card => card.column === 1)
+                .sort((a, b) => (b.priority || 0) - (a.priority || 0));
         },
         secondColumnCards() {
-            return this.cards.filter(card => card.column === 2);
+            return this.cards
+                .filter(card => card.column === 2)
+                .sort((a, b) => (b.priority || 0) - (a.priority || 0));
         },
         thirdColumnCards() {
             return this.cards.filter(card => card.column === 3);
@@ -76,7 +81,7 @@ let app = new Vue({
         }
     },
     methods: {
-        addCard(title, items) {
+        addCard(title, items, priority = false) {
             if (this.firstColumnCards.length >= 3) {
                 alert('Нельзя добавить больше 3 карточек в первый столбец');
                 return;
@@ -86,16 +91,18 @@ let app = new Vue({
                 title: title,
                 items: items.map(text => ({ text: text, completed: false })),
                 column: 1,
-                completedDate: null
+                completedDate: null,
+                priority: priority
             };
             this.cards.push(newCard);
             this.saveData();
         },
         createCard() {
             if (this.isNewCardValid) {
-                this.addCard(this.newCardTitle, this.newCardItems);
+                this.addCard(this.newCardTitle, this.newCardItems, this.isPriority);
                 this.newCardTitle = '';
                 this.newCardItems = ['', '', ''];
+                this.isPriority = false;
             }
         },
         addNewCardItem() {
